@@ -1,0 +1,6 @@
+*.pyc
+saved_models
+*.pkl
+__pycache__
+*tfevents*
+*.hdf5
