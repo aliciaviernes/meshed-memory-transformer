@@ -216,6 +216,9 @@ class COCO(PairedDataset):
         else:
             ids = None
 
+        self.roots = roots
+        self.ids = ids
+
         with nostdout():
             self.train_examples, self.val_examples, self.test_examples = self.get_samples(roots, ids)
         examples = self.train_examples + self.val_examples + self.test_examples
@@ -236,8 +239,6 @@ class COCO(PairedDataset):
 
         for split in ['train', 'val', 'test']:
             
-            print(roots[split]['cap'])
-            
             if isinstance(roots[split]['cap'], tuple):
                 coco_dataset = (pyCOCO(roots[split]['cap'][0]), pyCOCO(roots[split]['cap'][1]))
                 root = roots[split]['img']
@@ -281,113 +282,107 @@ class COCO(PairedDataset):
         return train_samples, val_samples, test_samples
 
 
-class VizWiz(PairedDataset):
+# class VizWiz(PairedDataset):
     
-    def __init__(self, image_field, text_field, img_root, ann_root, id_root=None, use_restval=True,
-                 cut_validation=False):
-        roots = {}
-        roots['train'] = {
-            'img': os.path.join(img_root, 'train'),
-            'cap': os.path.join(ann_root, 'train.json')
-        }
-        roots['val'] = {
-            'img': os.path.join(img_root, 'val'),
-            'cap': os.path.join(ann_root, 'val.json')
-        }
-        roots['test'] = {
-            'img': os.path.join(img_root, 'val'),
-            'cap': os.path.join(ann_root, 'val.json')
-        }
-        # cannot have these
-        roots['trainrestval'] = {
-            'img': (roots['train']['img'], roots['val']['img']),
-            'cap': (roots['train']['cap'], roots['val']['cap'])
-        }
+#     def __init__(self, image_field, text_field, img_root, ann_root, id_root=None, use_restval=True,
+#                  cut_validation=False):
+#         roots = {}
+#         roots['train'] = {
+#             'img': os.path.join(img_root, 'train'),
+#             'cap': os.path.join(ann_root, 'train.json')
+#         }
+#         roots['val'] = {
+#             'img': os.path.join(img_root, 'val'),
+#             'cap': os.path.join(ann_root, 'val.json')
+#         }
+#         roots['test'] = {
+#             'img': os.path.join(img_root, 'val'),
+#             'cap': os.path.join(ann_root, 'val.json')
+#         }
+#         # cannot have these
+#         roots['trainrestval'] = {
+#             'img': (roots['train']['img'], roots['val']['img']),
+#             'cap': (roots['train']['cap'], roots['val']['cap'])
+#         }
 
-        if id_root is not None:
-            # TODO create IDs
-            ids = {}
-            ids['train'] = np.load(os.path.join(id_root, 'vizwiz_train_ids.npy'))
-            ids['val'] = np.load(os.path.join(id_root, 'vizwiz_dev_ids.npy'))
-            if cut_validation:
-                ids['val'] = ids['val'][:5000]
-            ids['test'] = np.load(os.path.join(id_root, 'coco_test_ids.npy'))
-            ids['trainrestval'] = (
-                ids['train'],
-                np.load(os.path.join(id_root, 'coco_restval_ids.npy')))
+#         if id_root is not None:
+#             # TODO create IDs
+#             ids = {}
+#             ids['train'] = np.load(os.path.join(id_root, 'vizwiz_train_ids.npy'))
+#             ids['val'] = np.load(os.path.join(id_root, 'vizwiz_dev_ids.npy'))
+#             if cut_validation:
+#                 ids['val'] = ids['val'][:5000]
+#             ids['test'] = np.load(os.path.join(id_root, 'vizwiz_test_ids.npy'))
+#             ids['trainrestval'] = (
+#                 ids['train'],
+#                 np.load(os.path.join(id_root, 'vizwiz_restval_ids.npy')))
 
-            if use_restval:
-                roots['train'] = roots['trainrestval']
-                ids['train'] = ids['trainrestval']
-        else:
-            ids = None
+#             if use_restval:
+#                 roots['train'] = roots['trainrestval']
+#                 ids['train'] = ids['trainrestval']
+#         else:
+#             ids = None
 
-        with nostdout():
-            self.train_examples, self.val_examples, self.test_examples = self.get_samples(roots, ids)
-        examples = self.train_examples + self.val_examples + self.test_examples
-        super(VizWiz, self).__init__(examples, {'image': image_field, 'text': text_field})
+#         with nostdout():
+#             self.train_examples, self.val_examples, self.test_examples = self.get_samples(roots, ids)
+#         examples = self.train_examples + self.val_examples + self.test_examples
+#         super(VizWiz, self).__init__(examples, {'image': image_field, 'text': text_field})
 
-    @property
-    def splits(self):
-        train_split = PairedDataset(self.train_examples, self.fields)
-        val_split = PairedDataset(self.val_examples, self.fields)
-        test_split = PairedDataset(self.test_examples, self.fields)
-        return train_split, val_split, test_split
+#     @property
+#     def splits(self):
+#         train_split = PairedDataset(self.train_examples, self.fields)
+#         val_split = PairedDataset(self.val_examples, self.fields)
+#         test_split = PairedDataset(self.test_examples, self.fields)
+#         return train_split, val_split, test_split
 
-    @classmethod
-    def get_samples(cls, roots, ids_dataset=None):
-        train_samples = []
-        val_samples = []
-        test_samples = []
+#     @classmethod
+#     def get_samples(cls, roots, ids_dataset=None):
+#         train_samples = []
+#         val_samples = []
+#         test_samples = []
 
-        for split in ['train', 'val', 'test']:
+#         for split in ['train', 'val', 'test']:
             
-            print(roots[split]['cap'])
+#             # print(roots[split]['cap'])
             
-            if isinstance(roots[split]['cap'], tuple):
-                coco_dataset = (pyCOCO(roots[split]['cap'][0]), pyCOCO(roots[split]['cap'][1]))
-                root = roots[split]['img']
-            else:
-                coco_dataset = (pyCOCO(roots[split]['cap']),)
-                root = (roots[split]['img'],)
+#             if isinstance(roots[split]['cap'], tuple):
+#                 coco_dataset = (pyCOCO(roots[split]['cap'][0]), pyCOCO(roots[split]['cap'][1]))
+#                 root = roots[split]['img']
+#             else:
+#                 coco_dataset = (pyCOCO(roots[split]['cap']),)
+#                 root = (roots[split]['img'],)
 
-            if ids_dataset is None:
-                ids = list(coco_dataset.anns.keys())
-            else:
-                ids = ids_dataset[split]
+#             if ids_dataset is None:
+#                 ids = list(coco_dataset.anns.keys())
+#             else:
+#                 ids = ids_dataset[split]
 
-            if isinstance(ids, tuple):
-                bp = len(ids[0])
-                ids = list(ids[0]) + list(ids[1])
-            else:
-                bp = len(ids)
+#             if isinstance(ids, tuple):
+#                 bp = len(ids[0])
+#                 ids = list(ids[0]) + list(ids[1])
+#             else:
+#                 bp = len(ids)
 
-            for index in range(len(ids)):
-                if index < bp:
-                    coco = coco_dataset[0]
-                    img_root = root[0]
-                else:
-                    coco = coco_dataset[1]
-                    img_root = root[1]
+#             for index in range(len(ids)):
+#                 if index < bp:
+#                     coco = coco_dataset[0]
+#                     img_root = root[0]
+#                 else:
+#                     coco = coco_dataset[1]
+#                     img_root = root[1]
 
-                ann_id = ids[index]
-                caption = coco.anns[ann_id]['caption']
-                img_id = coco.anns[ann_id]['image_id']
-                filename = coco.loadImgs(img_id)[0]['file_name']
+#                 ann_id = ids[index]
+#                 caption = coco.anns[ann_id]['caption']
+#                 img_id = coco.anns[ann_id]['image_id']
+#                 filename = coco.loadImgs(img_id)[0]['file_name']
 
-                example = Example.fromdict({'image': os.path.join(img_root, filename), 'text': caption})
+#                 example = Example.fromdict({'image': os.path.join(img_root, filename), 'text': caption})
 
-                if split == 'train':
-                    train_samples.append(example)
-                elif split == 'val':
-                    val_samples.append(example)
-                elif split == 'test':
-                    test_samples.append(example)
+#                 if split == 'train':
+#                     train_samples.append(example)
+#                 elif split == 'val':
+#                     val_samples.append(example)
+#                 elif split == 'test':
+#                     test_samples.append(example)
 
-        return train_samples, val_samples, test_samples
-
-
-if __name__ == "__main__":
-    mainpath = '/home/aanagnostopoulou/DATA/vizwiz/'
-    # item = VizWiz(image_field='', text_field='', img_root=mainpath, ann_root=f'{mainpath}annotations/', id_root=mainpath)
-
+#         return train_samples, val_samples, test_samples

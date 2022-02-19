@@ -1,0 +1,46 @@
+{'train': 
+    {'img': 
+        ('coco/images/train2014', 'coco/images/val2014'), 
+    'cap': 
+        ('/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_train2014.json', 
+        '/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_val2014.json')
+    }, 
+'val': 
+    {'img': 
+        'coco/images/val2014', 
+    'cap': 
+        '/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_val2014.json'
+    }, 
+'test': 
+    {'img': 
+        'coco/images/val2014', 
+    'cap': 
+    '/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_val2014.json'
+    }, 
+'trainrestval': 
+    {'img': 
+        ('coco/images/train2014', 'coco/images/val2014'), 
+    'cap': 
+        (
+            '/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_train2014.json', 
+            '/home/aanagnostopoulou/DATA/coco/annotations_m2/captions_val2014.json'
+        )
+    }
+}
+
+################################################################################################
+
+{
+    'train': 
+        (
+            array([787980, 789366, 789888, ...,   5716,   8002,   9277]), 
+            array([681330, 686718, 688839, ..., 639359, 640040, 645302])
+        ), 
+    'val': array([474921, 479322, 479334, ..., 190103, 192959, 194195]), 
+    'test': array([770337, 771687, 772707, ..., 647813, 648512, 650354]), 
+    'trainrestval': 
+        (
+            array([787980, 789366, 789888, ...,   5716,   8002,   9277]), 
+            array([681330, 686718, 688839, ..., 639359, 640040, 645302])
+        )
+}

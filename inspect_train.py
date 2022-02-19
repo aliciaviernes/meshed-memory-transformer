@@ -1,6 +1,6 @@
 import random
 from data import ImageDetectionsField, TextField, RawField
-from data import COCO, DataLoader
+from data import COCO, DataLoader # , VizWiz
 import evaluation
 from evaluation import PTBTokenizer, Cider
 from models.transformer import Transformer, MemoryAugmentedEncoder, MeshedDecoder, ScaledDotProductAttentionMemory
@@ -15,6 +15,7 @@ import numpy as np
 import itertools
 import multiprocessing
 from shutil import copyfile
+import paths as P
 
 random.seed(1234)
 torch.manual_seed(1234)
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume_last', action='store_true')
     parser.add_argument('--resume_best', action='store_true')
     parser.add_argument('--features_path', type=str, default='./coco_detections.hdf5')
-    parser.add_argument('--annotation_folder', type=str, default='/home/aanagnostopoulou/DATA/coco/annotations_m2')
+    parser.add_argument('--annotation_folder', type=str, default=P.annotations_m2)
     parser.add_argument('--logs_folder', type=str, default='tensorboard_logs')
     args = parser.parse_args()
 
@@ -164,15 +165,18 @@ if __name__ == '__main__':
                            remove_punctuation=True, nopoints=False)
 
     # Create the dataset
+    mainpath = P.vizwiz
     dataset = COCO(image_field, text_field, 'coco/images/', args.annotation_folder, args.annotation_folder)
-    train_dataset, val_dataset, test_dataset = dataset.splits
+    # dataset = VizWiz(image_field, text_field, img_root=mainpath, ann_root=f'{mainpath}annotations/', use_restval=False)
+    print(dataset.ids)
+    # train_dataset, val_dataset, test_dataset = dataset.splits
 
-    if not os.path.isfile('vocab_%s.pkl' % args.exp_name):
-        print("Building vocabulary")
-        text_field.build_vocab(train_dataset, val_dataset, min_freq=5)
-        pickle.dump(text_field.vocab, open('vocab_%s.pkl' % args.exp_name, 'wb'))
-    else:
-        text_field.vocab = pickle.load(open('vocab_%s.pkl' % args.exp_name, 'rb'))
+    # if not os.path.isfile('vocab_%s.pkl' % args.exp_name):
+    #     print("Building vocabulary")
+    #     text_field.build_vocab(train_dataset, val_dataset, min_freq=5)
+    #     pickle.dump(text_field.vocab, open('vocab_%s.pkl' % args.exp_name, 'wb'))
+    # else:
+    #     text_field.vocab = pickle.load(open('vocab_%s.pkl' % args.exp_name, 'rb'))
 
     # NOTE alan03: maybe build data augmentation HERE
 """
